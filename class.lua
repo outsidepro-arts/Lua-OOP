@@ -65,9 +65,8 @@ function class(extends)
 			if not extends then
 				error("The class initialization method is not provided", 2)
 			end
-		else
-			cls.init(instance, ...)
 		end
+		cls.init(instance, ...)
 		local gettersData, settersData = {}, {}
 		if instance.__getters then
 			for key, getter in pairs(instance.__getters) do
