@@ -34,33 +34,6 @@ function class(extends)
 				})
 			end
 		end
-		-- Create new getter
-		---@param (string): the name of newgetter
-		---@param lambda (function): the lambda which it will be called when this getter will   indexing by
-		-- This function should not expect any parameters but should return a  value.
-		---@return (table): returns the table with simplified newsetter function for sequent  call
-		-- Please note: after second sequent chain part no value return!
-		function instance:getter(name, lambda)
-			if not self.__getters then
-				self.__getters = {}
-			end
-			self.__getters[name] = lambda
-			-- Allow to build sequent call
-			return {setter = function(lambda) self.setter(self, name, lambda) end}
-		end
-		-- Create new setter
-		---@param (string): the name of new setter
-		---@param lambda (function): the lambda which it will be called when this setter will   indexing by
-		-- This function should  expect new value in one parameter  and return nil.
-		---@return (table): returns the table with simplified newsetter function for sequent  call
-		-- Please note: after second sequent chain part no value return!
-		function instance:setter(name, lambda)
-			if not self.__setters then
-				self.__setters = {}
-			end
-			self.__setters[name] = lambda
-			return {getter = function(lambda) self.getter(self, name, lambda) end}
-		end
 		if not cls.init then
 			if not extends then
 				error("The class initialization method is not provided", 2)
@@ -68,20 +41,20 @@ function class(extends)
 		end
 		cls.init(instance, ...)
 		local gettersData, settersData = {}, {}
-		if instance.__getters then
-			for key, getter in pairs(instance.__getters) do
-				gettersData[key] = getter
+		for key, value in pairs(instance) do
+			if type(value) == "table" then
+				local isGetOrSet = false
+				if value.__hasgetter then
+					gettersData[key] = value.get
+					isGetOrSet = true
+				end
+				if value.__hassetter then
+					settersData[key] = value.set
+					isGetOrSet = true
+				end
+				if isGetOrSet then instance[key] = nil end
 			end
-			instance.__getters = nil
 		end
-		if instance.__setters then
-			for key, setter in pairs(instance.__setters) do
-				settersData[key] = setter
-			end
-			instance.__setters = nil
-		end
-		-- Free the names for class developer's purposes
-		instance.__getters, instance.__setters = nil, nil
 		setmetatable(instance, {
 		__name = "class",
 		__id = getmetatable(cls).__id,

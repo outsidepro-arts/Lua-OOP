@@ -22,26 +22,24 @@ function isclass(instance, class)
 end
 
 function property(template)
-	local newProperty = {
-		hasGetter = false,
-		hasSetter = false
-	}
+	template = template or {}
+	local newProperty = {}
 	if template.get then
 		newProperty.get = template.get
-		newProperty.hasGetter = true
+		newProperty.__hasgetter = true
 	end
 	if template.set then
 		newProperty.set = template.set
-		newProperty.hasSetter = true
+		newProperty.__hassetter = true
 	end
 	local propertyMT = {}
 	function propertyMT:__newindex(key, value)
 		if key == "get" then
-			self.get = value
-			self.hasGetter = true
+			rawset(self, "get", value)
+			rawset(self, "__hasgetter", true)
 		elseif key == "set" then
-			self.set = value
-			self.hasSetter = true
+			rawset(self, "set", value)
+			rawset(self, "__hassetter", true)
 		end
 	end
 	setmetatable(newProperty, propertyMT)
