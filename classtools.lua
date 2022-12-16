@@ -21,6 +21,12 @@ function isclass(instance, class)
 	return false
 end
 
+-- Creates a getter/setter property
+---@param template (table, optional): a table which must contain the following keys:
+	-- get (function, optional): getter function which will be called when the property index attempts
+	-- set (function, optional): the setter function which will be called when a program attempts to assign something
+-- When template argument omited, function creates an empty property which get/set fields might assigned later. Please note that new property can be set only these two keys and no one more else! Other fields will be ignored.
+---@return new property which class insttance will be indexed as usual field.
 function property(template)
 	template = template or {}
 	local newProperty = {}
