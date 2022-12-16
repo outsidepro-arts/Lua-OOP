@@ -60,13 +60,13 @@ function class(extends)
 		__id = getmetatable(cls).__id,
 			__index = function (self, key)
 				if gettersData[key] then
-					return gettersData[key]()
+					return gettersData[key](self)
 				end
 				return rawget(cls, key)
 			end,
 			__newindex = function (self, key, value)
 				if settersData[key] then
-					settersData[key](value)
+					settersData[key](self, value)
 					return
 				end
 				rawset(self, key, value)
