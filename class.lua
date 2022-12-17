@@ -34,6 +34,7 @@ function class(extends)
 				})
 			end
 		end
+		instance.fromClass = cls
 		if not cls.init then
 			if not extends then
 				error("The class initialization method is not provided", 2)
