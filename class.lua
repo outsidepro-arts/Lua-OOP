@@ -41,33 +41,29 @@ function class(extends)
 			end
 		end
 		cls.init(instance, ...)
-		local gettersData, settersData = {}, {}
+		local hiddenData = {}
 		for key, value in pairs(instance) do
 			if type(value) == "table" then
-				local isGetOrSet = false
-				if value.__hasgetter then
-					gettersData[key] = value.get
-					isGetOrSet = true
+				if value.__hasgetter or value.__hassetter then
+					hiddenData[key] = value
+					instance[key] = nil
 				end
-				if value.__hassetter then
-					settersData[key] = value.set
-					isGetOrSet = true
-				end
-				if isGetOrSet then instance[key] = nil end
 			end
 		end
 		setmetatable(instance, {
 		__name = "class",
 		__id = getmetatable(cls).__id,
 			__index = function (self, key)
-				if gettersData[key] then
-					return gettersData[key](self)
+				local maybeValue = hiddenData[key] or cls[key] or rawget(self, key)
+				if type(maybeValue) == "table" and maybeValue.__hasgetter then
+					return maybeValue.get(self)
 				end
-				return rawget(cls, key)
+				return maybeValue
 			end,
 			__newindex = function (self, key, value)
-				if settersData[key] then
-					settersData[key](self, value)
+				local maybeObject = hiddenData[key] or cls[key] or self[key]
+				if type(maybeObject) == "table" and maybeObject.__hassetter then
+					maybeObject.set(self, value)
 					return
 				end
 				rawset(self, key, value)
