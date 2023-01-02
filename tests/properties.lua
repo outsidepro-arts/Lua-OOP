@@ -117,8 +117,9 @@ for _, crewItem in ipairs(crew) do
 end
 
 if passenger then
-	-- Lets check a setter, re-locating our passenger to another cabin
+	-- Lets check a setter, changing passenger's some data
+	passenger.lastname = "Bas"
 	passenger.cabin = 12
 	-- Check our passenger's cabin
-	print(string.format("%s living i %u cabin.", passenger.firstname, passenger.cabin))
+	print(string.format("Now the passenger's name is %s %s. They are living in %u cabin.", passenger.firstname, passenger.lastname, passenger.cabin))
 end
