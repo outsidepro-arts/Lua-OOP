@@ -15,7 +15,7 @@ function isclass(instance, class)
 		end
 	elseif type(instMeta) == "table" and not clsMeta then
 		if instMeta.__name then
-			return instMeta.__name == "class" and instMeta.__id ~= nil
+			return (instMeta.__name == "class_instance" or instMeta.__name == "class") and instMeta.__id ~= nil
 		end
 	end
 	return false

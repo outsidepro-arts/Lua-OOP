@@ -4,19 +4,10 @@
 ---@param extends The class which new class should be inherits (optional, if omited the new empty class will be defined)
 ---@return not initialized class definition.
 function class(extends)
-	local function generateClassID()
-		local result = {}
-		local base = "abcdefghijklmnopqrstuvwxyz1234567890"
-		for i = 1, 128 do
-			local charIndex = math.random(#base)
-			table.insert(result, ({ [1] = base:sub(charIndex, charIndex):lower(), [2] = base:sub(charIndex, charIndex):upper() })[math.random(1, 2)])
-		end
-		return table.concat(result, "")
-	end
 	local object = {}
 	local ourMT = {}
 	ourMT.__name = "class"
-	ourMT.__id = generateClassID()
+	ourMT.__id = math.random(1, 1000000000)
 	-- Declare new class instance
 	--@param ... The initialization parameters which was been declared in attached 'init' method
 	--@return New class instance
@@ -48,25 +39,36 @@ function class(extends)
 					hiddenData[key] = value
 					instance[key] = nil
 				end
+			else
+				if key:find("^static_") then
+					hiddenData[key] = value
+					instance[key] = nil
+				end
 			end
 		end
 		setmetatable(instance, {
-		__name = "class",
+		__name = "class_instance",
 		__id = getmetatable(cls).__id,
 			__index = function (self, key)
-				local maybeValue = hiddenData[key] or cls[key] or rawget(self, key)
+				if rawget(self, "__index") then return rawget(self, "__index")(self, key) end
+				if rawget(cls, "__index") then return rawget(cls, "__index")(self, key) end
+				local maybeValue = hiddenData[key] or cls[key] or hiddenData[string.format("static_%s", key)] or cls[string.format("static_%s", key)]
 				if type(maybeValue) == "table" and maybeValue.__hasgetter then
 					return maybeValue.get(self)
 				end
 				return maybeValue
 			end,
 			__newindex = function (self, key, value)
-				local maybeObject = hiddenData[key] or cls[key] or self[key]
+				if rawget(self, "__newindex") then  rawget(self, "__newindex")(self, key, value) return end
+				if cls.__newindex then cls.__newindex(self, key, value) return end
+				local maybeObject, maybeStaticObject = hiddenData[key] or cls[key], hiddenData[string.format("static__%s", key)] or cls[string.format("static_", key)]
 				if type(maybeObject) == "table" and maybeObject.__hassetter then
 					maybeObject.set(self, value)
 					return
 				end
-				rawset(self, key, value)
+				if maybeObject and not maybeStaticObject then
+					rawset(self, key, value)
+				end
 			end,
 			-- The class destructor when GC performs
 			__gc = cls.destroy,
@@ -94,7 +96,7 @@ function class(extends)
 			__bxor = cls.__bxor,
 			__bnot = cls.__bnot,
 			__bshl = cls.__bshl,
-			__bshr = __bshr,
+			__bshr = cls.__bshr,
 		})
 		return instance
 	end
