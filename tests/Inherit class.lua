@@ -5,7 +5,7 @@ require "oop"
 Person = class()
 
 -- Class initialization
-function Person:init(firstname, lastname)
+function Person:__init(firstname, lastname)
 	-- Fill out the self-fields
 	self.firstname = firstname
 	self.lastname = lastname
@@ -20,9 +20,9 @@ end
 -- Inherit class
 Employee = class(Person)
 
-function Employee:init(firstname, lastname, company, job)
+function Employee:__init(firstname, lastname, company, job)
 	-- Initializing the superclass
-	self:super():init(firstname, lastname)
+	self:super()(firstname, lastname)
 	-- Fill next the extended fields
 	self.company = company
 	self.job = job

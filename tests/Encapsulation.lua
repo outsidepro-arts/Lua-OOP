@@ -3,12 +3,14 @@ require "oop"
 -- Encapsulation is not provided here. But if you really need this, you may use specific method's scope.
 EarthHuman = class()
 
-function EarthHuman:init(firstName, lastName, birthDate)
+function EarthHuman:__init(firstName, lastName, birthDate)
 	-- Public scope
 	self.firstName = firstName
 	self.lastName = lastName
 	-- Initializing the private fields
-	local private.birthDate = birthDate
+	local private = {
+		birthDate = birthDate
+	}
 	-- Declare the method which will address to the private fields
 	function self:getAge()
 		local curDate = os.date("*t")

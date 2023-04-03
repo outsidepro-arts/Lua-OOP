@@ -22,16 +22,19 @@ function class(extends)
 						end
 						return extends[key]
 					end,
+					__call = function(_, ...)
+						extends.__init(invoker, ...)
+					end
 				})
 			end
 		end
 		instance.fromClass = cls
-		if not cls.init then
+		if not cls.__init then
 			if not extends then
 				error("The class initialization method is not provided", 2)
 			end
 		end
-		cls.init(instance, ...)
+		cls.__init(instance, ...)
 		local hiddenData = {}
 		for key, value in pairs(instance) do
 			if type(value) == "table" then
@@ -71,7 +74,7 @@ function class(extends)
 				end
 			end,
 			-- The class destructor when GC performs
-			__gc = cls.destroy,
+			__gc = cls.__destroy,
 			-- Assign the metamethods using class methods
 			-- To re-define your class methods just declare their namesake method  of metamethods
 			__call = cls.__call,

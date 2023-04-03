@@ -5,7 +5,7 @@ require "oop"
 Person = class()
 
 -- Class initialization
-function Person:init(firstname, lastname)
+function Person:__init(firstname, lastname)
 	-- Fill out the self-fields
 	self.firstname = firstname
 	self.lastname = lastname

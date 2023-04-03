@@ -3,7 +3,7 @@ require "oop"
 -- A class which will represent a database item.
 StarshipPerson = class()
 
-function StarshipPerson:init(lcConnection, id)
+function StarshipPerson:__init(lcConnection, id)
 	self.connection = lcConnection
 	self.id = id
 end
@@ -96,7 +96,7 @@ end
 -- A database class which implements the items 
 Crew = class()
 
-function Crew:init(connection)
+function Crew:__init(connection)
 	self.connection = connection
 end
 
