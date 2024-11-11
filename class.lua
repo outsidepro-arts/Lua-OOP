@@ -82,6 +82,7 @@ function class(extends)
 			__len = cls.__len,
 			__pairs = cls.__pairs,
 			__ipairs = cls.__ipairs,
+			__close = cls.__close, -- Lua 5.4 to-be-closed variables support
 			__unm = cls.__unm,
 			__add = cls.__add,
 			__sub = cls.__sub,
